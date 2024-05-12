@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>테스트 페이지</title>
+        <script>
+            function submit() {
+                const query = document.getElementById("query").value;
+                location.href="/restApi/generator/" + query;
+            }
+            function submit2() {
+                document.getElementById("form1").submit();
+            }
+        </script>
+    </head>
+    <body>
+        <p>안녕하세요 프롬프트 테스트 페이지 입니다.</p>
+        <hr>
+        <p>현재시각 : {{now}}</p>
+        <hr>
+        <h3>프롬프트 자동 생성 테스트(영어로 작성해주세요)</h3>
+        <input id="query" name="query" style="width:300px" placeholder="당신은 무엇을 하는 사람인가요?">
+        <button id="submitButton" onclick="submit()">submit</button>
+        <hr>
+        <h3>Llama 테스트(영어로 작성해주세요)</h3>
+        <form id="form1" method="post" action="{% url 'restApi:request-llama' %}">
+            {% csrf_token %}
+            <input id="query2" name="query" style="width:300px" placeholder="프롬프트를 입력해주세요.">
+            <button id="submitButton" onclick="submit2()">submit</button>
+        </form>
+    </body>
+</html>
