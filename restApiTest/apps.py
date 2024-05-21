@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class RestApiConfig(AppConfig):
+class RestApiTestConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'restApi'
+    name = 'restApiTest'

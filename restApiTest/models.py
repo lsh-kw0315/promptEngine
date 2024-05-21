@@ -2,6 +2,7 @@ from django.db import models
 
 
 # Create your models here.
-class Answer(models.Model):
+class LlamaCpp(models.Model):
     query = models.TextField()
     answer = models.TextField()
+    chatLog = models.TextField(default=None, null=True)

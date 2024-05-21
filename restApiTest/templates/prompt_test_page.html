@@ -8,7 +8,7 @@
         <script>
             function submit() {
                 const query = document.getElementById("query").value;
-                location.href="/restApi/generator/" + query;
+                location.href="/restApiTest/generator/" + query;
             }
             function submit2() {
                 document.getElementById("form1").submit();
@@ -25,7 +25,7 @@
         <button id="submitButton" onclick="submit()">submit</button>
         <hr>
         <h3>Llama 테스트(영어로 작성해주세요)</h3>
-        <form id="form1" method="post" action="{% url 'restApi:request-llama' %}">
+        <form id="form1" method="post" action="{% url 'restApiTest:request-llama' %}">
             {% csrf_token %}
             <input id="query2" name="query" style="width:300px" placeholder="프롬프트를 입력해주세요.">
             <button id="submitButton" onclick="submit2()">submit</button>

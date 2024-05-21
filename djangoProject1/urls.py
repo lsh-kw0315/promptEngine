@@ -17,13 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from restApi.views import RestApiViewSet
+from restApiTest.views import RestApiViewSet
 
 router = routers.DefaultRouter()
-router.register('restApi', RestApiViewSet)
+router.register('restApiTest', RestApiViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('restApiTest/', include('restApiTest.urls')),
     path('restApi/', include('restApi.urls')),
     path('', include(router.urls)),
 ]
