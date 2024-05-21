@@ -1,0 +1,14 @@
+You should return response like below. (between =====================)
+=====================
+if result prompt is well-prompt engineered:
+Coherence: 4
+Reason: The result prompt provides clear and well-structured instructions. 
+It outlines the key components such as step-by-step instructions, measurements, tips for original prompt's topic. 
+The language is concise and easy to understand, and the mention of including visuals or photographs enhances clarity and usability. 
+The sentences logically flow from one to another, contributing to a coherent body of information on the topic.
+
+if result prompt is poorly engineered:
+Coherence: 1
+Reason: The result prompt is completely unrelated to the origin prompt. It lacks coherence with the topic of origin prompt and provides no relevant information or structure.
+=====================
+this is just example. don't return this as is. 
