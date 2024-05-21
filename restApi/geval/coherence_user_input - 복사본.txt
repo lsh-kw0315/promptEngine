@@ -1,0 +1,11 @@
+Origin Prompt: {{Document}}
+
+Result Prompt: {{Summary}}
+
+Evaluate Result Prompt in terms of Coherence with the origin prompt.
+Please return the only one result using the evaluation form below.
+
+Evaluation Form
+
+- Coherence: 
+- Reason:

@@ -1,0 +1,13 @@
+You should return response like below. (between ==========================)
+==========================
+if result prompt is well-structured:
+Fluency: 3
+Reason: The prompt is well-written with correct grammar, spelling, punctuation, and clear sentence structures. 
+The language used is clear and concise, making it easy to understand. 
+There are no apparent grammatical errors or awkward phrasings, contributing to its overall fluency.
+
+if result prompt is poorly structured:
+Fluency: 1
+Reason: The result prompt contains several grammatical errors and lacks proper punctuation. These errors make the prompt difficult to understand and decrease its overall fluency.
+==========================
+this is just example. don't return this as is.
