@@ -134,48 +134,33 @@ def gemini(bot_prompt) :
 def geval(request):
     origin_prompt = request.POST['origin']
     result_prompt = request.POST['result']
-
-    coherence_instruction = open("restApi/geval/coherence_CoT.txt").read()
-    consistency_instruction = open("restApi/geval/consistency_CoT.txt").read()
-    fluency_instruction = open("restApi/geval/fluency_CoT.txt").read()
-    relevance_instruction = open("restApi/geval/relevance_CoT.txt").read()
-
-    coherence_assistant_example = open("restApi/geval/coherence_result_example.txt").read()
-    consistency_assistant_example = open("restApi/geval/consistency_result_example.txt").read()
-    fluency_assistant_example = open("restApi/geval/fluency_result_example.txt").read()
-    relevance_assistant_example = open("restApi/geval/relevance_result_example.txt").read()
+    
+    coherence_instruction = open("restApiTest/geval/coherence/coherence_CoT_ko.txt",encoding="utf-8").read()
+    consistency_instruction = open("restApiTest/geval/consistency/consistency_CoT_ko.txt",encoding="utf-8").read()
+    fluency_instruction = open("restApiTest/geval/fluency/fluency_CoT_ko.txt",encoding="utf-8").read()
+    relevance_instruction = open("restApiTest/geval/relevance/relevance_CoT_ko.txt",encoding="utf-8").read()
+    
+    coherence_assistant_example=open("restApiTest/geval/coherence/coherence_result_example_ko.txt",encoding="utf-8").read()
+    consistency_assistant_example=open("restApiTest/geval/consistency/consistency_result_example_ko.txt",encoding="utf-8").read()
+    fluency_assistant_example=open("restApiTest/geval/fluency/fluency_result_example_ko.txt",encoding="utf-8").read()
+    relevance_assistant_example=open("restApiTest/geval/relevance/relevance_result_example_ko.txt",encoding="utf-8").read()
 
     ct, ignore = 0, 0
 
-    coherence_input = open("restApi/geval/coherence_user_input.txt").read().replace('{{Document}}',
-                                                                                    origin_prompt).replace(
-        '{{Summary}}', result_prompt)
-    consistency_input = open("restApi/geval/consistency_user_input.txt").read().replace('{{Document}}',
-                                                                                        origin_prompt).replace(
-        '{{Summary}}', result_prompt)
-    fluency_input = open("restApi/geval/fluency_user_input.txt").read().replace('{{Summary}}', result_prompt)
-    relevance_input = open("restApi/geval/relevance_user_input.txt").read().replace('{{Document}}',
-                                                                                    origin_prompt).replace(
-        '{{Summary}}', result_prompt)
-
-    coherence = {"system": coherence_instruction, "user": coherence_input, "assistant": coherence_assistant_example}
-    consistency = {"system": consistency_instruction, "user": consistency_input,
-                   "assistant": consistency_assistant_example}
-    fluency = {"system": fluency_instruction, "user": fluency_input, "assistant": fluency_assistant_example}
-    relevance = {"system": relevance_instruction, "user": relevance_input, "assistant": relevance_assistant_example}
-
-    coherence_full_prompt = open("restApi/geval/coherence_full_prompt.txt").read().replace('{{Document}}',
-                                                                                           origin_prompt).replace(
-        '{{Summary}}', result_prompt)
-    consistency_full_prompt = open("restApi/geval/consistency_full_prompt.txt").read().replace('{{Document}}',
-                                                                                               origin_prompt).replace(
-        '{{Summary}}', result_prompt)
-    fluency_full_prompt = open("restApi/geval/fluency_full_prompt.txt").read().replace('{{Document}}',
-                                                                                       origin_prompt).replace(
-        '{{Summary}}', result_prompt)
-    relevance_full_prompt = open("restApi/geval/relevance_full_prompt.txt").read().replace('{{Document}}',
-                                                                                           origin_prompt).replace(
-        '{{Summary}}', result_prompt)
+    coherence_input = open("restApiTest/geval/coherence/coherence_user_input_ko.txt",encoding="utf-8").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    consistency_input =open("restApiTest/geval/consistency/consistency_user_input_ko.txt",encoding="utf-8").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    fluency_input =open("restApiTest/geval/fluency/fluency_user_input_ko.txt",encoding="utf-8").read().replace('{{Summary}}', result_prompt)
+    relevance_input = open("restApiTest/geval/relevance/relevance_user_input_ko.txt",encoding="utf-8").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    
+    coherence={"system":coherence_instruction,"user":coherence_input,"assistant":coherence_assistant_example}
+    consistency={"system":consistency_instruction,"user":consistency_input,"assistant":consistency_assistant_example}
+    fluency={"system":fluency_instruction,"user":fluency_input,"assistant":fluency_assistant_example}
+    relevance={"system":relevance_instruction,"user":relevance_input,"assistant":relevance_assistant_example}
+    
+    coherence_full_prompt=open("restApiTest/geval/coherence/coherence_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
+    consistency_full_prompt=open("restApiTest/geval/consistency/consistency_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
+    fluency_full_prompt=open("restApiTest/geval/fluency/fluency_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
+    relevance_full_prompt=open("restApiTest/geval/relevance/relevance_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
 
     data = {}
 

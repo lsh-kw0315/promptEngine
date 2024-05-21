@@ -13,6 +13,12 @@
             function submit2() {
                 document.getElementById("form1").submit();
             }
+    
+            function submit4() {
+                document.getElementById("form3").submit();
+            }
+    
+ 
         </script>
     </head>
     <body>
@@ -30,5 +36,18 @@
             <input id="query2" name="query" style="width:300px" placeholder="프롬프트를 입력해주세요.">
             <button id="submitButton" onclick="submit2()">submit</button>
         </form>
+
+        <h3>GEVAL 테스트</h3>
+        <form id="form3" method="post" action="{% url 'restApiTest:request-geval' %}">
+            {% csrf_token %}
+            <input id="origin_prompt" name="origin" style="width:300px" placeholder="원래 프롬프트를 입력해주세요.">
+            <br>
+            <input id="result_prompt" name="result" style="width:300px" placeholder="개선된 프롬프트를 입력해주세요.">
+            <button id="submitButton" onclick="submit4()">submit</button>
+        </form>
+
+    
     </body>
+
+    
 </html>
