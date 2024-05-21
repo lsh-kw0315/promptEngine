@@ -13,9 +13,16 @@
             function submit2() {
                 document.getElementById("form1").submit();
             }
-            function submit2() {
+
+            function submit3() {
                 document.getElementById("form2").submit();
             }
+
+            function submit4() {
+                document.getElementById("form3").submit();
+            }
+
+
         </script>
     </head>
     <body>
@@ -27,19 +34,30 @@
         <input id="query" name="query" style="width:300px" placeholder="당신은 무엇을 하는 사람인가요?">
         <button id="submitButton" onclick="submit()">submit</button>
         <hr>
-        <h3>Llama 테스트(영어로 작성해주세요)</h3>
+        <h3>Llama 답변 테스트(영어로 작성해주세요)</h3>
         <form id="form1" method="post" action="{% url 'restApi:request-llama' %}">
             {% csrf_token %}
             <input id="query2" name="query" style="width:300px" placeholder="프롬프트를 입력해주세요.">
             <button id="submitButton" onclick="submit2()">submit</button>
         </form>
+
         <h3>GEVAL 테스트</h3>
-        <form id="form2" method="post" action="{% url 'restApi:request-geval' %}">
+        <form id="form3" method="post" action="{% url 'restApi:request-geval' %}">
             {% csrf_token %}
             <input id="origin_prompt" name="origin" style="width:300px" placeholder="원래 프롬프트를 입력해주세요.">
             <br>
             <input id="result_prompt" name="result" style="width:300px" placeholder="개선된 프롬프트를 입력해주세요.">
+            <button id="submitButton" onclick="submit4()">submit</button>
+        </form>
+
+        <hr>
+        <h3>하이퍼 파라미터형 태스크 프롬프트 테스트(영어로 작성해주세요)</h3>
+        <form id="form2" method="post" action="{% url 'restApi:request-llama2' %}">
+            {% csrf_token %}
+            <input id="query3" name="query" style="width:300px" placeholder="프롬프트를 입력해주세요.">
             <button id="submitButton" onclick="submit3()">submit</button>
         </form>
+
+
     </body>
 </html>
