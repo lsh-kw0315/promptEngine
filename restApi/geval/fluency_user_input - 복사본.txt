@@ -1,0 +1,11 @@
+Example:
+
+Result Prompt: {{Summary}}
+
+Evaluate the resulting prompts in terms of fluency.
+Please return the only one result using the evaluation form below.
+
+Evaluation Form:
+
+- Fluency: 
+- Reason:
