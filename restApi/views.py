@@ -99,32 +99,32 @@ def geval(request):
     origin_prompt = request.POST['origin']
     result_prompt = request.POST['result']
 
-    coherence_instruction = open("restApi/prompts/geval/coherence_CoT.txt").read()
-    consistency_instruction = open("restApi/prompts/geval/consistency_CoT.txt").read()
-    fluency_instruction = open("restApi/prompts/geval/fluency_CoT.txt").read()
-    relevance_instruction = open("restApi/prompts/geval/relevance_CoT.txt").read()
+    coherence_instruction = open("restApi/geval/coherence_CoT.txt").read()
+    consistency_instruction = open("restApi/geval/consistency_CoT.txt").read()
+    fluency_instruction = open("restApi/geval/fluency_CoT.txt").read()
+    relevance_instruction = open("restApi/geval/relevance_CoT.txt").read()
     
-    coherence_assistant_example=open("restApi/prompts/geval/coherence_result_example.txt").read()
-    consistency_assistant_example=open("restApi/prompts/geval/consistency_result_example.txt").read()
-    fluency_assistant_example=open("restApi/prompts/geval/fluency_result_example.txt").read()
-    relevance_assistant_example=open("restApi/prompts/geval/relevance_result_example.txt").read()
+    coherence_assistant_example=open("restApi/geval/coherence_result_example.txt").read()
+    consistency_assistant_example=open("restApi/geval/consistency_result_example.txt").read()
+    fluency_assistant_example=open("restApi/geval/fluency_result_example.txt").read()
+    relevance_assistant_example=open("restApi/geval/relevance_result_example.txt").read()
 
     ct, ignore = 0, 0
 
-    coherence_input = open("restApi/prompts/geval/coherence_user_input.txt").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
-    consistency_input =open("restApi/prompts/geval/consistency_user_input.txt").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
-    fluency_input =open("restApi/prompts/geval/fluency_user_input.txt").read().replace('{{Summary}}', result_prompt)
-    relevance_input = open("restApi/prompts/geval/relevance_user_input.txt").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    coherence_input = open("restApi/geval/coherence_user_input.txt").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    consistency_input =open("restApi/geval/consistency_user_input.txt").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    fluency_input =open("restApi/geval/fluency_user_input.txt").read().replace('{{Summary}}', result_prompt)
+    relevance_input = open("restApi/geval/relevance_user_input.txt").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
     
     coherence={"system":coherence_instruction,"user":coherence_input,"assistant":coherence_assistant_example}
     consistency={"system":consistency_instruction,"user":consistency_input,"assistant":consistency_assistant_example}
     fluency={"system":fluency_instruction,"user":fluency_input,"assistant":fluency_assistant_example}
     relevance={"system":relevance_instruction,"user":relevance_input,"assistant":relevance_assistant_example}
     
-    coherence_full_prompt=open("restApi/prompts/geval/coherence_full_prompt.txt").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
-    consistency_full_prompt=open("restApi/prompts/geval/consistency_full_prompt.txt").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
-    fluency_full_prompt=open("restApi/prompts/geval/fluency_full_prompt.txt").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
-    relevance_full_prompt=open("restApi/prompts/geval/relevance_full_prompt.txt").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
+    coherence_full_prompt=open("restApi/geval/coherence_full_prompt.txt").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
+    consistency_full_prompt=open("restApi/geval/consistency_full_prompt.txt").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
+    fluency_full_prompt=open("restApi/geval/fluency_full_prompt.txt").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
+    relevance_full_prompt=open("restApi/geval/relevance_full_prompt.txt").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
 
     
     data={}
@@ -141,9 +141,6 @@ def geval(request):
             "fluency":fluency_answer,
             "relevance":relevance_answer
                         }
-    #     instance['all_responses'] = all_responses
-    #     new_json.append(all_responses)
-    #     ct += 1
 
     except Exception as e:
         print(e)
@@ -154,10 +151,6 @@ def geval(request):
             print('ignored', ignore)
 
                 
-
-    # print('ignored total', ignore)
-    # with open(args.save_fp, 'w') as f:
-    #     json.dump(new_json, f, indent=4)
     serializer = RestApiSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
