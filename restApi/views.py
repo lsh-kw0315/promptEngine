@@ -121,7 +121,7 @@ def llama(prompt):
 
 
 def gemini(bot_prompt) :
-    GOOGLE_API_KEY = "AIzaSyAiDzalf8J3i0qFRESAOr-dQ_cbdjXnSFU"
+    GOOGLE_API_KEY = ""
 
     genai.configure(api_key=GOOGLE_API_KEY)
 
