@@ -4,6 +4,5 @@ Evaluate the resulting prompts in terms of fluency.
 Please return the only one result using the evaluation form below.
 
 Evaluation Form:
-
 - Fluency: (fill only 1 to 3)
 - Reason: (write your reasons for the score according to evaluation step and criteria)

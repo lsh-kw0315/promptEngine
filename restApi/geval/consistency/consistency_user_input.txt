@@ -6,6 +6,5 @@ Evaluate the resulting prompt for consistency with the original prompt.
 Please return the only one result using the evaluation form below.
 
 Evaluation Form
-
 - Consistency: (fill only 1 to 5)
 - Reason: (write your reasons for the score according to evaluation step and criteria)

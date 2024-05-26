@@ -14,6 +14,7 @@ import time
 
 from .models import Answer
 import google.generativeai as genai
+import os
 
 bot_prompt = "친절한 챗봇으로서 상대방의 요청에 최대한 자세하고 친절하게 답하자. 모든 대답은 한국어(Korean)으로 대답해줘."
 
@@ -27,7 +28,7 @@ tokenizer = BartTokenizer.from_pretrained("restApiTest/model/chatgpt-prompt-gene
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)'''
 
-genai.configure(api_key="MYCODE")
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
 
 # Create your views here.

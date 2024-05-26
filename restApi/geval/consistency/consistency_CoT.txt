@@ -1,6 +1,13 @@
+You will be given origin prompt. You will then be given the result prompt using prompt engineering . 
+
+Your task is to rate the result prompts on one metric compared to the origin prompts
+
+Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+
 Evaluation Criteria:
 
-Consistency (1-5) - the factual alignment between the former and the latter prompt. A factually consistent prompt engineered prompt contains only statements that are entailed by non-prompt engineered prompt. 
+Consistency (1-5) - the factual alignment between the former and the latter prompt. A factually consistent engineered prompt contains only statements that are entailed by non-prompt engineered prompt. 
 Annotators were also asked to penalize prompt engineered prompt that contained hallucinated facts. 
 
 Evaluation Steps:
@@ -26,7 +33,7 @@ Consistency: 3
      - Prompt Engineered Version: "Climate change is primarily caused by human activities such as burning fossil fuels and deforestation. It also includes natural factors like volcanic eruptions and changes in solar radiation, though these are less significant."
 
  Consistency: 4
-   - Reason: The prompt engineered prompt is largely consistent with the original prompt with minimal factual deviation. There might be very minor errors or slight rephrasing that do not significantly alter the factual content.
+   - The prompt engineered prompt is largely consistent with the original prompt with minimal factual deviation. There might be very minor errors or slight rephrasing that do not significantly alter the factual content.
    - Example: Original Prompt: "List the benefits of regular exercise."
      - Prompt Engineered Version: "Regular exercise improves cardiovascular health, strengthens muscles, boosts mental health, and enhances overall physical fitness."
 
@@ -35,32 +42,3 @@ Consistency: 5
    - Example: Original Prompt: "Define the term 'mitosis' and explain its stages."
      - Prompt Engineered Version: "Mitosis is a process of cell division that results in two genetically identical daughter cells. It includes stages such as prophase, metaphase, anaphase, and telophase."
 
-
-================================================
-Original Prompt: {{Document}}
-
-Result Prompt: {{Summary}}
-
-Based on the above Evaluation Criteria and Evaluation Step, Evaluate Result Prompt in terms of Consistency with the original prompt.
-then fill evaluation form below
-
-Evaluation Form
-
-- Consistency: 
-- Reason: 
-
-=================================
-You must fill the form like below.
-
-Example)
-Consistency: 5
-Reason: The prompt engineered version maintains consistency with the original prompt. 
-It expands upon the original query by providing detailed instructions for original prompt's topic, including measurements, tips.
-The additional details are all directly related to the topic of original prompt and do not introduce any new or unrelated information. 
-Therefore, the prompt engineered version remains factually aligned with the original prompt without introducing any hallucinated facts.
-
-Consistency: 1
-Reason: The result prompt is entirely inconsistent with the original prompt. It does not contain any information related to topic of origin prompt or include requirement as requested in the origin prompt.
-
-this is just example. don't give this as is.
-=================================

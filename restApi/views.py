@@ -9,7 +9,8 @@ from rest_framework import viewsets
 from .serializer import RestApiSerializer
 import google.generativeai as genai
 import time
-
+import os
+from django.views.decorators.csrf import csrf_exempt
 
 # json serializer 세팅
 class RestApiViewSet(viewsets.ModelViewSet):
@@ -23,6 +24,9 @@ tokenizer = BartTokenizer.from_pretrained("restApiTest/model/chatgpt-prompt-gene
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)
 
+API_KEY=os.environ['GEMINI_API_KEY']
+genai.configure(api_key=API_KEY)
+ 
 # llama 세팅
 client = OpenAI(
     base_url="http://localhost:8000/v1",
@@ -88,7 +92,7 @@ def prompt_generator(request, query):
 
     # answer = llama(bot_prompt)
     answer = gemini(bot_prompt)
-    data = {'query': persona, 'answer': answer}
+    data = {'query': persona, 'answer': answer, 'intermedia':bot_prompt}
 
     serializer = RestApiSerializer(data=data)
     if serializer.is_valid():
@@ -121,9 +125,6 @@ def llama(prompt):
 
 
 def gemini(bot_prompt) :
-    GOOGLE_API_KEY = "AIzaSyAiDzalf8J3i0qFRESAOr-dQ_cbdjXnSFU"
-
-    genai.configure(api_key=GOOGLE_API_KEY)
 
     model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
@@ -131,6 +132,7 @@ def gemini(bot_prompt) :
 
     return response.text
 
+@csrf_exempt
 def geval(request):
     origin_prompt = request.POST['origin']
     result_prompt = request.POST['result']
@@ -194,30 +196,33 @@ def geval_getAnswer(prompt, full_prompt):
     print("받은 프롬프트:")
     print(prompt)
     # print(full_prompt)
-    llm_response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            # {"role":"system","content":full_prompt}
-            {"role": "system", "content": prompt['system']},
-            {"role": "user", "content": prompt['user']},
-            # {"role":"assistant","content":prompt['assistant']},
-        ],
-        # prompt=full_prompt,
-        temperature=1,
-        max_tokens=200,
-        top_p=1,
-        frequency_penalty=2.0,
-        presence_penalty=0,
-        # stop='assistant',
-        # logprobs=40,
-        # n=5,
-        # echo=False
+    # llm_response = client.chat.completions.create(
+    #     model="gpt-3.5-turbo",
+    #     messages=[
+    #         {"role":"system","content":full_prompt}
+    #         #{"role": "system", "content": prompt['system']},
+    #         #{"role": "user", "content": prompt['user']},
+    #         #{"role":"assistant","content":prompt['assistant']},
+    #     ],
+    #     # prompt=full_prompt,
+    #     temperature=1,
+    #     max_tokens=200,
+    #     top_p=1,
+    #     frequency_penalty=2.0,
+    #     presence_penalty=0,
+    #     # stop='assistant',
+    #     # logprobs=40,
+    #     # n=5,
+    #     # echo=False
 
-    )
+    # )
+    
+    llm_response= genai.GenerativeModel("gemini-pro").generate_content(full_prompt)
     time.sleep(0.5)
     print("llm 응답:")
     print(llm_response)
     # response = [llm_response.choices[i].text for i in range(len(llm_response.choices))]
-    response = [llm_response.choices[i].message.content for i in range(len(llm_response.choices))]
+    #response = [llm_response.choices[i].message.content for i in range(len(llm_response.choices))]
+    response=llm_response.text
 
     return response
