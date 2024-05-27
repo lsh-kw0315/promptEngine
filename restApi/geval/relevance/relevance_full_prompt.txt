@@ -24,19 +24,3 @@ then fill evaluation form below.
 Evaluation Form
 - Relevance: 
 - Reason: 
-
-===================
-You should fill form like below.
-
-Example)
-Relevance: 5
-Reason: The prompt engineered version maintains perfect relevance to the original prompt. 
-It includes all the important content from the original query, such as providing instructions for original prompt's topic and including tips.
-There are no redundancies or excess information present in the prompt engineered version. 
-It focuses solely on the task of original prompt's topic and query.
-
-Relevance: 1
-Reason: The result prompt is completely irrelevant to the original prompt. It does not contain any information related to topic of origin prompt or include requirements as requested in the origin prompt.
-
-this is just example. don't give this as is.
-===================

@@ -9,7 +9,8 @@ from rest_framework import viewsets
 from .serializer import RestApiSerializer
 import google.generativeai as genai
 import time
-
+import os
+from django.views.decorators.csrf import csrf_exempt
 
 # json serializer 세팅
 class RestApiViewSet(viewsets.ModelViewSet):
@@ -23,6 +24,9 @@ tokenizer = BartTokenizer.from_pretrained("restApiTest/model/chatgpt-prompt-gene
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)
 
+API_KEY=os.environ['GEMINI_API_KEY']
+genai.configure(api_key=API_KEY)
+ 
 # llama 세팅
 client = OpenAI(
     base_url="http://localhost:8000/v1",
@@ -88,7 +92,7 @@ def prompt_generator(request, query):
 
     # answer = llama(bot_prompt)
     answer = gemini(bot_prompt)
-    data = {'query': persona, 'answer': answer}
+    data = {'query': persona, 'answer': answer, 'intermedia':bot_prompt}
 
     serializer = RestApiSerializer(data=data)
     if serializer.is_valid():
@@ -121,9 +125,6 @@ def llama(prompt):
 
 
 def gemini(bot_prompt) :
-    GOOGLE_API_KEY = ""
-
-    genai.configure(api_key=GOOGLE_API_KEY)
 
     model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
@@ -131,51 +132,37 @@ def gemini(bot_prompt) :
 
     return response.text
 
+@csrf_exempt
 def geval(request):
     origin_prompt = request.POST['origin']
     result_prompt = request.POST['result']
-
-    coherence_instruction = open("restApi/geval/coherence_CoT.txt").read()
-    consistency_instruction = open("restApi/geval/consistency_CoT.txt").read()
-    fluency_instruction = open("restApi/geval/fluency_CoT.txt").read()
-    relevance_instruction = open("restApi/geval/relevance_CoT.txt").read()
-
-    coherence_assistant_example = open("restApi/geval/coherence_result_example.txt").read()
-    consistency_assistant_example = open("restApi/geval/consistency_result_example.txt").read()
-    fluency_assistant_example = open("restApi/geval/fluency_result_example.txt").read()
-    relevance_assistant_example = open("restApi/geval/relevance_result_example.txt").read()
+    
+    coherence_instruction = open("restApiTest/geval/coherence/coherence_CoT_ko.txt",encoding="utf-8").read()
+    consistency_instruction = open("restApiTest/geval/consistency/consistency_CoT_ko.txt",encoding="utf-8").read()
+    fluency_instruction = open("restApiTest/geval/fluency/fluency_CoT_ko.txt",encoding="utf-8").read()
+    relevance_instruction = open("restApiTest/geval/relevance/relevance_CoT_ko.txt",encoding="utf-8").read()
+    
+    coherence_assistant_example=open("restApiTest/geval/coherence/coherence_result_example_ko.txt",encoding="utf-8").read()
+    consistency_assistant_example=open("restApiTest/geval/consistency/consistency_result_example_ko.txt",encoding="utf-8").read()
+    fluency_assistant_example=open("restApiTest/geval/fluency/fluency_result_example_ko.txt",encoding="utf-8").read()
+    relevance_assistant_example=open("restApiTest/geval/relevance/relevance_result_example_ko.txt",encoding="utf-8").read()
 
     ct, ignore = 0, 0
 
-    coherence_input = open("restApi/geval/coherence_user_input.txt").read().replace('{{Document}}',
-                                                                                    origin_prompt).replace(
-        '{{Summary}}', result_prompt)
-    consistency_input = open("restApi/geval/consistency_user_input.txt").read().replace('{{Document}}',
-                                                                                        origin_prompt).replace(
-        '{{Summary}}', result_prompt)
-    fluency_input = open("restApi/geval/fluency_user_input.txt").read().replace('{{Summary}}', result_prompt)
-    relevance_input = open("restApi/geval/relevance_user_input.txt").read().replace('{{Document}}',
-                                                                                    origin_prompt).replace(
-        '{{Summary}}', result_prompt)
-
-    coherence = {"system": coherence_instruction, "user": coherence_input, "assistant": coherence_assistant_example}
-    consistency = {"system": consistency_instruction, "user": consistency_input,
-                   "assistant": consistency_assistant_example}
-    fluency = {"system": fluency_instruction, "user": fluency_input, "assistant": fluency_assistant_example}
-    relevance = {"system": relevance_instruction, "user": relevance_input, "assistant": relevance_assistant_example}
-
-    coherence_full_prompt = open("restApi/geval/coherence_full_prompt.txt").read().replace('{{Document}}',
-                                                                                           origin_prompt).replace(
-        '{{Summary}}', result_prompt)
-    consistency_full_prompt = open("restApi/geval/consistency_full_prompt.txt").read().replace('{{Document}}',
-                                                                                               origin_prompt).replace(
-        '{{Summary}}', result_prompt)
-    fluency_full_prompt = open("restApi/geval/fluency_full_prompt.txt").read().replace('{{Document}}',
-                                                                                       origin_prompt).replace(
-        '{{Summary}}', result_prompt)
-    relevance_full_prompt = open("restApi/geval/relevance_full_prompt.txt").read().replace('{{Document}}',
-                                                                                           origin_prompt).replace(
-        '{{Summary}}', result_prompt)
+    coherence_input = open("restApiTest/geval/coherence/coherence_user_input_ko.txt",encoding="utf-8").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    consistency_input =open("restApiTest/geval/consistency/consistency_user_input_ko.txt",encoding="utf-8").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    fluency_input =open("restApiTest/geval/fluency/fluency_user_input_ko.txt",encoding="utf-8").read().replace('{{Summary}}', result_prompt)
+    relevance_input = open("restApiTest/geval/relevance/relevance_user_input_ko.txt",encoding="utf-8").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    
+    coherence={"system":coherence_instruction,"user":coherence_input,"assistant":coherence_assistant_example}
+    consistency={"system":consistency_instruction,"user":consistency_input,"assistant":consistency_assistant_example}
+    fluency={"system":fluency_instruction,"user":fluency_input,"assistant":fluency_assistant_example}
+    relevance={"system":relevance_instruction,"user":relevance_input,"assistant":relevance_assistant_example}
+    
+    coherence_full_prompt=open("restApiTest/geval/coherence/coherence_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
+    consistency_full_prompt=open("restApiTest/geval/consistency/consistency_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
+    fluency_full_prompt=open("restApiTest/geval/fluency/fluency_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
+    relevance_full_prompt=open("restApiTest/geval/relevance/relevance_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
 
     data = {}
 
@@ -209,30 +196,33 @@ def geval_getAnswer(prompt, full_prompt):
     print("받은 프롬프트:")
     print(prompt)
     # print(full_prompt)
-    llm_response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            # {"role":"system","content":full_prompt}
-            {"role": "system", "content": prompt['system']},
-            {"role": "user", "content": prompt['user']},
-            # {"role":"assistant","content":prompt['assistant']},
-        ],
-        # prompt=full_prompt,
-        temperature=1,
-        max_tokens=200,
-        top_p=1,
-        frequency_penalty=2.0,
-        presence_penalty=0,
-        # stop='assistant',
-        # logprobs=40,
-        # n=5,
-        # echo=False
+    # llm_response = client.chat.completions.create(
+    #     model="gpt-3.5-turbo",
+    #     messages=[
+    #         {"role":"system","content":full_prompt}
+    #         #{"role": "system", "content": prompt['system']},
+    #         #{"role": "user", "content": prompt['user']},
+    #         #{"role":"assistant","content":prompt['assistant']},
+    #     ],
+    #     # prompt=full_prompt,
+    #     temperature=1,
+    #     max_tokens=200,
+    #     top_p=1,
+    #     frequency_penalty=2.0,
+    #     presence_penalty=0,
+    #     # stop='assistant',
+    #     # logprobs=40,
+    #     # n=5,
+    #     # echo=False
 
-    )
+    # )
+    
+    llm_response= genai.GenerativeModel("gemini-pro").generate_content(full_prompt)
     time.sleep(0.5)
     print("llm 응답:")
     print(llm_response)
     # response = [llm_response.choices[i].text for i in range(len(llm_response.choices))]
-    response = [llm_response.choices[i].message.content for i in range(len(llm_response.choices))]
+    #response = [llm_response.choices[i].message.content for i in range(len(llm_response.choices))]
+    response=llm_response.text
 
     return response

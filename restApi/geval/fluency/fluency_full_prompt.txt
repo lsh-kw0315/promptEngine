@@ -24,19 +24,4 @@ Evaluation Form:
 - Fluency: 
 - Reason: 
 
-==========================
-You should fill the form like below. 
-
-Example)
-
-Fluency: 3
-Reason: The prompt is well-written with correct grammar, spelling, punctuation, and clear sentence structures. 
-The language used is clear and concise, making it easy to understand. 
-There are no apparent grammatical errors or awkward phrasings, contributing to its overall fluency.
-
-Fluency: 1
-Reason: The result prompt contains several grammatical errors and lacks proper punctuation. These errors make the prompt difficult to understand and decrease its overall fluency.
-
-this is just example. don't give this as is.
-==========================
 

@@ -1,3 +1,10 @@
+You will be given result prompt, which is result of applying prompt engineering technique to origin prompt.
+
+Your task is to rate the result prompts on one metric.
+
+Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+
 Evaluation Criteria:
 
 Coherence (1-5) - the collective quality of all sentences. We align this dimension with the DUC quality question of structure and coherence whereby "the prompt should be well-structured and well-organized. The prompt should not just be a heap of related information, but should build from sentence to a coherent body of information about a topic."
@@ -30,33 +37,3 @@ Coherence: 5
    - The prompt is exceptionally well-structured and organized. Every sentence logically follows the previous one, building a clear, coherent body of information. The flow is smooth and easy to follow, with no disjointed or unrelated statements.
    - Example: "To create an effective homemade cleaner, start with basic ingredients such as vinegar, lemon juice, and baking soda. Vinegar and lemon juice work well for cleaning various surfaces, removing grime and stains. Baking soda adds a disinfecting property, ensuring surfaces are sanitary. For a fresh scent, incorporate a few drops of essential oils, which also provide additional cleaning benefits."
 
-
-
-================================================
-Original Prompt: {{Document}}
-
-Result Prompt: {{Summary}}
-
-Based on the above Evaluation Criteria and Evaluation Step, Evaluate Result Prompt in terms of Coherence with the original prompt.
-then fill evaluation form below.
-
-Evaluation Form
-
-- Coherence: 
-- Reason: 
-
-=====================
-You must fill the form like below.
-
-Example)
-Coherence: 4
-Reason: The result prompt provides clear and well-structured instructions. 
-It outlines the key components such as step-by-step instructions, measurements, tips for original prompt's topic. 
-The language is concise and easy to understand, and the mention of including visuals or photographs enhances clarity and usability. 
-The sentences logically flow from one to another, contributing to a coherent body of information on the topic.
-
-Coherence: 1
-Reason: The result prompt is completely unrelated to the origin prompt. It lacks coherence with the topic of origin prompt and provides no relevant information or structure.
-
-this is just example. don't give this as is. 
-=====================
