@@ -84,7 +84,7 @@ def prompt_generator(request, query):
     print(output)
     bot_prompt = ("당신은 [persona] 일을 보조하는 역할을 맡게 되었습니다. "
                   "\n\nInput과 같이 [persona] 일을 하는 사람에게 명령들과 해당 명령에 관한 세부적인 사항을 출력하는 것을 3번 반복하시오. "
-                  "명령은 \"하시오\" 로 마무리하시오.  세부사항을 작성할 때는 주제, 프로세스, 예시 순으로 출력하시오. "
+                  "명령은 \"하시오\" 로 마무리하시오.  세부사항을 작성할 때는 주제, 프로세스, 예시, 'donedonedone' 순으로 출력하시오. "
                   "출력할 때는 한국어로 번역하여 출력하시오. \n\nInput: [PromptGenResult]").replace("[persona]", persona).replace(
         "[PromptGenResult]", output)
 
