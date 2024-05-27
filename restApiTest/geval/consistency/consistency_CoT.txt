@@ -1,0 +1,44 @@
+You will be given origin prompt. You will then be given the result prompt using prompt engineering . 
+
+Your task is to rate the result prompts on one metric compared to the origin prompts
+
+Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+
+Evaluation Criteria:
+
+Consistency (1-5) - the factual alignment between the former and the latter prompt. A factually consistent engineered prompt contains only statements that are entailed by non-prompt engineered prompt. 
+Annotators were also asked to penalize prompt engineered prompt that contained hallucinated facts. 
+
+Evaluation Steps:
+
+1. Compare the prompt before prompt engineering with the prompt after prompt engineering.
+2. Identify any statements in the prompt engineered version that are not entailed by the original prompt.
+3. Assess the consistency between the two prompts in terms of factual alignment.
+4. Consider whether any hallucinated facts are present in the prompt engineered version.
+5. Rate the prompt engineered prompt on a scale of 1 to 5 based on its consistency with the original prompt, penalizing any instances of factual inconsistency or hallucinated facts.
+Consistency: 1
+   - The prompt engineered prompt contains numerous statements that are not supported by the original prompt. It includes several hallucinated facts and significant deviations from the original content.
+   - Example: Original Prompt: "Explain the process of photosynthesis."
+     - Prompt Engineered Version: "Photosynthesis is a method by which animals create energy from food. It involves animals eating plants and using sunlight to generate ATP."
+
+Consistency: 2
+   - The prompt engineered prompt has some statements that are aligned with the original prompt but also includes multiple unsupported statements or hallucinated facts. The deviations are noticeable and affect the factual integrity.
+   - Example: Original Prompt: "Describe the life cycle of a butterfly."
+     - Prompt Engineered Version: "Butterflies begin as eggs, then become caterpillars. They enter a cocoon stage, and finally emerge as fully grown butterflies that live for several years."
+
+Consistency: 3
+   - The prompt engineered prompt is mostly consistent with the original prompt but includes one or two minor unsupported statements or slight factual deviations. Overall, the core information is preserved.
+   - Example: Original Prompt: "What are the main causes of climate change?"
+     - Prompt Engineered Version: "Climate change is primarily caused by human activities such as burning fossil fuels and deforestation. It also includes natural factors like volcanic eruptions and changes in solar radiation, though these are less significant."
+
+ Consistency: 4
+   - The prompt engineered prompt is largely consistent with the original prompt with minimal factual deviation. There might be very minor errors or slight rephrasing that do not significantly alter the factual content.
+   - Example: Original Prompt: "List the benefits of regular exercise."
+     - Prompt Engineered Version: "Regular exercise improves cardiovascular health, strengthens muscles, boosts mental health, and enhances overall physical fitness."
+
+Consistency: 5
+   - The prompt engineered prompt is fully consistent with the original prompt. All statements are factually aligned, with no hallucinated facts or deviations. The core message and factual content remain intact.
+   - Example: Original Prompt: "Define the term 'mitosis' and explain its stages."
+     - Prompt Engineered Version: "Mitosis is a process of cell division that results in two genetically identical daughter cells. It includes stages such as prophase, metaphase, anaphase, and telophase."
+

@@ -1,0 +1,29 @@
+You will be given origin prompt. You will then be given the result prompt using prompt engineering . 
+
+Your task is to rate the result prompts on one metric compared to the origin prompts
+
+Please make sure you read and understand these instructions carefully. Please keep this document open while reviewing, and refer to it as needed.
+
+
+Evaluation Criteria:
+
+Consistency (1-5) - the factual alignment between the former and the latter prompt. A factually consistent prompt engineered prompt contains only statements that are entailed by non-prompt engineered prompt. 
+Annotators were also asked to penalize prompt engineered prompt that contained hallucinated facts. 
+
+Evaluation Steps:
+
+1. Compare the prompt before prompt engineering with the prompt after prompt engineering.
+2. Identify any statements in the prompt engineered version that are not entailed by the original prompt.
+3. Assess the consistency between the two prompts in terms of factual alignment.
+4. Consider whether any hallucinated facts are present in the prompt engineered version.
+5. Rate the prompt engineered prompt on a scale of 1 to 5 based on its consistency with the original prompt, penalizing any instances of factual inconsistency or hallucinated facts.
+
+Origin Prompt: {{Document}}
+
+Result Prompt: {{Summary}}
+
+
+Evaluation Form(Return only the results that fill out the template below)
+
+- Consistency: 
+- Reason:

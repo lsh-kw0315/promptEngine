@@ -1,0 +1,26 @@
+Evaluation Criteria:
+Relevance (1-5) - selection of important content from the prompt. The promt should include only important information from the original ambiguous prompt. Annotators were instructed to penalize the prompt which contained redundancies and excess information.
+
+Evaluation Steps:
+1. Compare the prompt resulting from prompt engineering to the original ambiguous prompt.
+2. Identify the important content retained from the original prompt in the prompt engineered version.
+3. Evaluate whether the prompt engineered version contains any redundancies or excess information not present in the original prompt.
+4. Consider the relevance of the information included in the prompt engineered version to the overall topic or query.
+5. Rate the prompt engineered prompt on a scale of 1 to 5 based on its relevance, where:
+   - 1: The prompt contains significant redundancies and includes excess information not relevant to the original prompt.
+   - 2: Some important content is included, but there are also redundancies and excess information.
+   - 3: The prompt includes mostly relevant information from the original prompt, with minor redundancies or excess.
+   - 4: The prompt is highly relevant, including important content from the original prompt with minimal redundancies or excess.
+   - 5: The prompt is perfectly relevant, including only important content from the original prompt without any redundancies or excess information.
+
+================================================
+Original Prompt: {{Document}}
+
+Result Prompt: {{Summary}}
+
+Based on the above Evaluation Criteria and Evaulation Step, Evaluate Result Prompt in terms of Relevance to the original prompt.
+then fill evaluation form below.
+
+Evaluation Form
+- Relevance: 
+- Reason: 

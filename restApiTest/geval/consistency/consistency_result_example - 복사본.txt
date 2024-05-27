@@ -1,0 +1,14 @@
+You should return response like below. (between =================================)
+=================================
+if result prompt is well-prompt engineered:
+Consistency: 5
+Reason: The prompt engineered version maintains consistency with the original prompt. 
+It expands upon the original query by providing detailed instructions for original prompt's topic, including measurements, tips.
+The additional details are all directly related to the topic of original prompt and do not introduce any new or unrelated information. 
+Therefore, the prompt engineered version remains factually aligned with the original prompt without introducing any hallucinated facts.
+
+if result prompt is poorly engineered:
+Consistency: 1
+Reason: The result prompt is entirely inconsistent with the original prompt. It does not contain any information related to topic of origin prompt or include requirement as requested in the origin prompt.
+=================================
+this is just example. don't return this as is.
