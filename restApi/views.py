@@ -74,11 +74,9 @@ def prompt_page(request):
     return render(request, 'prompt_page.html', context)
 
 
-def prompt_generator(request, query):
-    #persona, output = persona_generator(query).values()
+def gemini_prompt_halfauto_generator(request, query): #gemini가 promptgen + hyper-parameter + 자동 생성 모두 함.
     input = query
     print(input)
-    #print(output)
     '''
     bot_prompt = ("당신은 [persona] 일을 보조하는 역할을 맡게 되었습니다. "
                   "\n\nInput과 같이 [persona] 일을 하는 사람에게 명령들과 해당 명령에 관한 세부적인 사항을 출력하는 것을 3번 반복하시오. "
@@ -98,6 +96,26 @@ def prompt_generator(request, query):
     # answer = llama(bot_prompt)
     answer = gemini(bot_prompt)
     data = {'query': input, 'answer': answer}
+
+    serializer = RestApiSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+    return JsonResponse(data)
+
+def gemini_prompt_auto_generator(request, query): #기존 영어 persona 입력 후 promptgen으로 자동생성, gemini에게 인계
+    persona, output = persona_generator(query).values()
+    print(persona)
+    print(output)
+    bot_prompt = ("당신은 [persona] 일을 보조하는 역할을 맡게 되었습니다. "
+                  "\n\nInput과 같이 [persona] 일을 하는 사람에게 명령들과 해당 명령에 관한 세부적인 사항을 출력하는 것을 3번 반복하시오. "
+                  "명령은 \"하시오\" 로 마무리하시오.  세부사항을 작성할 때는 주제, 프로세스, 예시 순으로 출력하시오. "
+                  "출력할 때는 한국어로 번역하여 출력하시오. \n\nInput: [PromptGenResult]").replace("[persona]", persona).replace(
+            "[PromptGenResult]", output)
+    # 임시로 promptgen 기능 또한 gemini가 수행하도록 지시, hyper-parameter형 프롬프트 기능 또한 추가함.
+
+    # answer = llama(bot_prompt)
+    answer = gemini(bot_prompt)
+    data = {'query': persona, 'answer': answer, 'intermedia': bot_prompt}
 
     serializer = RestApiSerializer(data=data)
     if serializer.is_valid():
@@ -130,7 +148,7 @@ def llama(prompt):
 
 
 def gemini(bot_prompt) :
-    GOOGLE_API_KEY = "masked"
+    GOOGLE_API_KEY = "AIzaSyCAQsDeXl1LWreDgeYPAbvlJNJhfr2n4Hc"
 
     genai.configure(api_key=GOOGLE_API_KEY)
 
