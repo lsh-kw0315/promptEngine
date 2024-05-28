@@ -9,7 +9,6 @@ from rest_framework import viewsets
 from .serializer import RestApiSerializer
 import google.generativeai as genai
 import time
-import os
 from django.views.decorators.csrf import csrf_exempt
 
 # json serializer 세팅
@@ -24,9 +23,9 @@ tokenizer = BartTokenizer.from_pretrained("restApiTest/model/chatgpt-prompt-gene
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)
 
-API_KEY=os.environ['GEMINI_API_KEY']
+API_KEY="AIzaSyCAQsDeXl1LWreDgeYPAbvlJNJhfr2n4Hc"
 genai.configure(api_key=API_KEY)
- 
+
 # llama 세팅
 client = OpenAI(
     base_url="http://localhost:8000/v1",
@@ -48,16 +47,16 @@ def llama2(request):
 
 def chat2(query):
     bot_prompt = (f'The task for you is to rephrase user queries into hyperparameter task prompts that make it easier '
-                f'for other text generation AI to understand the requirements. For example, if I ask: \n\n"I\'m '
-                f'planning a trip to Japan next month. Can you provide some recommendations for must-see attractions '
-                f'and activities in Tokyo?",\n\n you should rephrase it as: \n\n"Provide recommendations on top '
-                f'attractions, activities, and experiences in Tokyo suitable for a one-month trip. Include '
-                f'information on convenient public transportation options, tips for efficient navigation, '
-                f'and any other helpful advice for first-time visitors. [Task: Travel Recommendations] [Destination: '
-                f'Tokyo, Japan] [Duration: 1 month] [Requirements: Top Attractions, Activities, Transportation, '
-                f'Travel Tips]"\n\nYour role is not(never) to *answer* the questions I ask but to rephrase them into '
-                f'*clear prompts with hyperparameters*(must) that make it easier for the text generation AI to '
-                f'understand and provide relevant responses. Now, here\'s my real question. \n Q: "{query}"')
+                  f'for other text generation AI to understand the requirements. For example, if I ask: \n\n"I\'m '
+                  f'planning a trip to Japan next month. Can you provide some recommendations for must-see attractions '
+                  f'and activities in Tokyo?",\n\n you should rephrase it as: \n\n"Provide recommendations on top '
+                  f'attractions, activities, and experiences in Tokyo suitable for a one-month trip. Include '
+                  f'information on convenient public transportation options, tips for efficient navigation, '
+                  f'and any other helpful advice for first-time visitors. [Task: Travel Recommendations] [Destination: '
+                  f'Tokyo, Japan] [Duration: 1 month] [Requirements: Top Attractions, Activities, Transportation, '
+                  f'Travel Tips]"\n\nYour role is not(never) to *answer* the questions I ask but to rephrase them into '
+                  f'*clear prompts with hyperparameters*(must) that make it easier for the text generation AI to '
+                  f'understand and provide relevant responses. Now, here\'s my real question. \n Q: "{query}"')
 
     answer = llama(bot_prompt)
 
@@ -78,7 +77,31 @@ def prompt_page(request):
     return render(request, 'prompt_page.html', context)
 
 
-def prompt_generator(request, query):
+def gemini_prompt_halfauto_generator(request, query):  # gemini가 promptgen + hyper-parameter + 자동 생성 모두 함.
+    input = query
+    print(input)
+
+    # 임시로 promptgen 기능 또한 gemini가 수행하도록 지시, hyper-parameter형 프롬프트 기능 또한 추가함.
+    bot_prompt = (
+        "question:\"[input]\" 이 단어들 또는 문장을 분석해서 \"hyper-parameter: [임무:여행 계획 추천], [장소:하와이], [기간:2025년 5월 중순 3박4일], "
+        "[추천 목록: 동선, 관광지, 음식 추천, 현지 특이사항, 챙겨야 할 물건], [프롬프트 작성 언어: 한국어]\"와 같이 간결하게 정리 한 뒤,"
+        "(중요! 앞에 기술한 hyper-parameter는 이해를 돕기 위해 예시로 적은 것이니 무조건 question에 적힌 것들로만 추론 해서 새로운 hyper-parameter를 작성 할 것.)"
+        "이 hyper-parameter에 의거해 의뢰인이 하고자 하는 명령과 명령에 관한 세부적인 사항과 hyper-parameter를 "
+        "출력하는 것을 3번 반복하시오. 명령은 \"하시오\"로 마무리하시오. 세부사항을 작성할 때는 주제, 프로세스, 예시 순으로 출력하시오."
+        "출력할 때는 한국어로 번역하여 출력하시오.").replace("[input]", input)
+    print(bot_prompt)
+
+    # answer = llama(bot_prompt)
+    answer = gemini(bot_prompt)
+    data = {'query': input, 'answer': answer}
+
+    serializer = RestApiSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+    return JsonResponse(data)
+
+
+def gemini_prompt_auto_generator(request, query):  # 기존 영어 persona 입력 후 promptgen으로 자동생성, gemini에게 인계
     persona, output = persona_generator(query).values()
     print(persona)
     print(output)
@@ -136,12 +159,12 @@ def gemini(bot_prompt) :
 def geval(request):
     origin_prompt = request.POST['origin']
     result_prompt = request.POST['result']
-    
+
     coherence_instruction = open("restApiTest/geval/coherence/coherence_CoT_ko.txt",encoding="utf-8").read()
     consistency_instruction = open("restApiTest/geval/consistency/consistency_CoT_ko.txt",encoding="utf-8").read()
     fluency_instruction = open("restApiTest/geval/fluency/fluency_CoT_ko.txt",encoding="utf-8").read()
     relevance_instruction = open("restApiTest/geval/relevance/relevance_CoT_ko.txt",encoding="utf-8").read()
-    
+
     coherence_assistant_example=open("restApiTest/geval/coherence/coherence_result_example_ko.txt",encoding="utf-8").read()
     consistency_assistant_example=open("restApiTest/geval/consistency/consistency_result_example_ko.txt",encoding="utf-8").read()
     fluency_assistant_example=open("restApiTest/geval/fluency/fluency_result_example_ko.txt",encoding="utf-8").read()
@@ -153,12 +176,12 @@ def geval(request):
     consistency_input =open("restApiTest/geval/consistency/consistency_user_input_ko.txt",encoding="utf-8").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
     fluency_input =open("restApiTest/geval/fluency/fluency_user_input_ko.txt",encoding="utf-8").read().replace('{{Summary}}', result_prompt)
     relevance_input = open("restApiTest/geval/relevance/relevance_user_input_ko.txt",encoding="utf-8").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
-    
+
     coherence={"system":coherence_instruction,"user":coherence_input,"assistant":coherence_assistant_example}
     consistency={"system":consistency_instruction,"user":consistency_input,"assistant":consistency_assistant_example}
     fluency={"system":fluency_instruction,"user":fluency_input,"assistant":fluency_assistant_example}
     relevance={"system":relevance_instruction,"user":relevance_input,"assistant":relevance_assistant_example}
-    
+
     coherence_full_prompt=open("restApiTest/geval/coherence/coherence_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
     consistency_full_prompt=open("restApiTest/geval/consistency/consistency_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
     fluency_full_prompt=open("restApiTest/geval/fluency/fluency_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
@@ -216,7 +239,7 @@ def geval_getAnswer(prompt, full_prompt):
     #     # echo=False
 
     # )
-    
+
     llm_response= genai.GenerativeModel("gemini-pro").generate_content(full_prompt)
     time.sleep(0.5)
     print("llm 응답:")

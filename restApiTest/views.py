@@ -28,7 +28,7 @@ tokenizer = BartTokenizer.from_pretrained("restApiTest/model/chatgpt-prompt-gene
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)'''
 
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+#genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
 
 # Create your views here.

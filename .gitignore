@@ -1,1 +1,5 @@
 restApiTest/model/
+*.pyc
+*.pyc
+db.sqlite3
+*.xml

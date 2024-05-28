@@ -7,8 +7,8 @@
         <title>프롬프트 api 실기능 페이지</title>
         <script>
             function submit() {
-                const query = document.getElementById("query").value;
-                location.href="/restApi/generator/" + query;
+                const query = document.getElementById("autogen").value;
+                location.href="/restApi/autogenerator/" + query;
             }
 
              function submit2() {
@@ -19,6 +19,11 @@
                 document.getElementById("form3").submit();
             }
 
+            function submit4() {
+                const query = document.getElementById("hautogen").value;
+                location.href="/restApi/hautogenerator/" + query;
+            }
+
         </script>
     </head>
     <body>
@@ -26,9 +31,13 @@
         <hr>
         <p>현재시각 : {{now}}</p>
         <hr>
-        <h3>프롬프트 자동 생성 테스트(영어로 작성해주세요)</h3>
-        <input id="query" name="query" style="width:300px" placeholder="당신은 무엇을 하는 사람인가요?">
+        <h3>프롬프트 자동 생성 테스트(영어단어만 가능)</h3>
+        <input id="autogen" name="query" style="width:400px" placeholder="당신은 무엇을 하는 사람인가요? 예시: soccer player">
         <button id="submitButton" onclick="submit()">submit</button>
+
+        <h3>프롬프트 반자동 생성 테스트(한글 가능)</h3>
+        <input id="hautogen" name="query" style="width:400px" placeholder="예시: 사진 잘 찍는 법">
+        <button id="submitButton" onclick="submit4()">submit</button>
 
         <h3>GEVAL 테스트</h3>
         <form id="form3" method="post" action="{% url 'restApi:request-geval' %}">
