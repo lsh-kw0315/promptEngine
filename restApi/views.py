@@ -115,7 +115,7 @@ def gemini_prompt_auto_generator(request, query):  # 기존 영어 persona 입�
 
     # answer = llama(bot_prompt)
     answer = gemini(bot_prompt)
-    data = {'query': persona, 'answer': answer, 'intermedia':bot_prompt}
+    data = {'query': persona, 'answer': answer, 'intermedia':output}
 
     serializer = RestApiSerializer(data=data)
     if serializer.is_valid():
@@ -186,7 +186,7 @@ def geval(request):
     consistency_full_prompt=open("restApiTest/geval/consistency/consistency_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
     fluency_full_prompt=open("restApiTest/geval/fluency/fluency_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
     relevance_full_prompt=open("restApiTest/geval/relevance/relevance_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
-
+    concrete_full_prompt=open("restApiTest/geval/concrete/concrete_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
     data = {}
 
     try:
@@ -194,11 +194,13 @@ def geval(request):
         consistency_answer = geval_getAnswer(consistency, consistency_full_prompt)
         fluency_answer = geval_getAnswer(fluency, fluency_full_prompt)
         relevance_answer = geval_getAnswer(relevance, relevance_full_prompt)
+        concrete_answer = geval_getAnswer(None, concrete_full_prompt)
         data['answer'] = {
             "coherence": coherence_answer,
             "consistency": consistency_answer,
             "fluency": fluency_answer,
-            "relevance": relevance_answer
+            "relevance": relevance_answer,
+            "concrete":concrete_answer
         }
 
     except Exception as e:
@@ -217,8 +219,8 @@ def geval(request):
 
 def geval_getAnswer(prompt, full_prompt):
     print("받은 프롬프트:")
-    print(prompt)
-    # print(full_prompt)
+    #print(prompt)
+    print(full_prompt)
     # llm_response = client.chat.completions.create(
     #     model="gpt-3.5-turbo",
     #     messages=[
