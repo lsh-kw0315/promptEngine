@@ -87,7 +87,7 @@ def gemini_prompt_halfauto_generator(request, query):  # gemini가 promptgen + h
         "[추천 목록: 동선, 관광지, 음식 추천, 현지 특이사항, 챙겨야 할 물건], [프롬프트 작성 언어: 한국어]\"와 같이 간결하게 정리 한 뒤,"
         "(중요! 앞에 기술한 hyper-parameter는 이해를 돕기 위해 예시로 적은 것이니 무조건 question에 적힌 것들로만 추론 해서 새로운 hyper-parameter를 작성 할 것.)"
         "이 hyper-parameter에 의거해 의뢰인이 하고자 하는 명령과 명령에 관한 세부적인 사항과 hyper-parameter를 "
-        "출력하는 것을 3번 반복하시오. 명령은 \"하시오\"로 마무리하시오. 세부사항을 작성할 때는 주제, 프로세스, 예시 순으로 출력하시오."
+        "출력하는 것을 3번 반복하시오. 명령은 \"하시오\"로 마무리하시오. 세부사항을 작성할 때는 주제, 프로세스, 예시, 'donedonedone' 순으로 출력하시오."
         "출력할 때는 한국어로 번역하여 출력하시오.").replace("[input]", input)
     print(bot_prompt)
 
