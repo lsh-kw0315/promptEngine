@@ -1,6 +1,0 @@
-Relevance: 5
-Reason: The prompt engineered version maintains perfect relevance to the original prompt. 
-It includes all the important content from the original query, such as providing instructions for original prompt's topic and including tips.
-There are no redundancies or excess information present in the prompt engineered version. 
-It focuses solely on the task of original prompt's topic and query.
-
