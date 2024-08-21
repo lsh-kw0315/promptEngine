@@ -1,6 +1,0 @@
-Coherence: 4
-Reason: The result prompt provides clear and well-structured instructions. 
-It outlines the key components such as step-by-step instructions, measurements, tips for original prompt's topic. 
-The language is concise and easy to understand, and the mention of including visuals or photographs enhances clarity and usability. 
-The sentences logically flow from one to another, contributing to a coherent body of information on the topic.
-
