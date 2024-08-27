@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import LlamaCpp
+from .models import Answer
 
 
-class RestApiTestSerializer(serializers.ModelSerializer):
+class RestApiSerializer(serializers.ModelSerializer):
     class Meta:
-        model = LlamaCpp
+        model = Answer
         fields = ('query', 'answer')
