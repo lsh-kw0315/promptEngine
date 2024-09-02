@@ -8,5 +8,6 @@ urlpatterns = [
     path('autogenerator/<str:query>', views.gemini_prompt_auto_generator, name='request_autogenerator'),
     path('llama2/', views.llama2, name='request-llama2'),
     path('geval/', views.geval, name='request-geval'),
-    path('analysis/', views.analysis, name='request-analysis')
+    path('analysis/', views.analysis, name='request-analysis'),
+    path('improve/', views.improve, name='improve-analysis'),
 ]

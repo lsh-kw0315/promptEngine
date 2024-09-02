@@ -11,6 +11,7 @@ import google.generativeai as genai
 import time
 from django.views.decorators.csrf import csrf_exempt
 
+
 # json serializer 세팅
 class RestApiViewSet(viewsets.ModelViewSet):
     queryset = Answer.objects.all()
@@ -23,7 +24,7 @@ tokenizer = BartTokenizer.from_pretrained("restApiTest/model/chatgpt-prompt-gene
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)
 
-API_KEY="AIzaSyCAQsDeXl1LWreDgeYPAbvlJNJhfr2n4Hc"
+API_KEY = "AIzaSyCAQsDeXl1LWreDgeYPAbvlJNJhfr2n4Hc"
 genai.configure(api_key=API_KEY)
 
 # llama 세팅
@@ -112,7 +113,7 @@ def gemini_prompt_auto_generator(request, query):  # 기존 영어 persona 입�
                   "\n(주의: 명령에 대해 LLM이 해당 역할을 하는 봇이 될 수 있도록 프롬프트를 구성하시오.)"
                   "\n\n세부사항을 작성할 때는 주제, 프로세스, 예시 순으로 출력하시오. "
                   "\n\n사용자에게 입력 받을 텍스트가 있다면 입력받을 수 있게 양식을 만드시오. "
-                  "\n각 반복은 반드시 \"**donedonedone**\" 로 끝나야합니다." 
+                  "\n각 반복은 반드시 \"**donedonedone**\" 로 끝나야합니다."
                   "출력할 때는 한국어로 번역하여 출력하시오. \n\nInput: [PromptGenResult]").replace("[persona]", persona).replace(
         "[PromptGenResult]", output)
 
@@ -120,7 +121,7 @@ def gemini_prompt_auto_generator(request, query):  # 기존 영어 persona 입�
 
     # answer = llama(bot_prompt)
     answer = gemini(bot_prompt)
-    data = {'query': persona, 'answer': answer, 'intermedia':output}
+    data = {'query': persona, 'answer': answer, 'intermedia': output}
 
     serializer = RestApiSerializer(data=data)
     if serializer.is_valid():
@@ -152,46 +153,56 @@ def llama(prompt):
     return answer
 
 
-def gemini(bot_prompt) :
-
+def gemini(bot_prompt):
     model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
     response = model.generate_content(bot_prompt)
 
     return response.text
 
+
 @csrf_exempt
 def geval(request):
     origin_prompt = request.POST['origin']
     result_prompt = request.POST['result']
 
-    coherence_instruction = open("geval/coherence/coherence_CoT_ko.txt",encoding="utf-8").read()
-    consistency_instruction = open("geval/consistency/consistency_CoT_ko.txt",encoding="utf-8").read()
-    fluency_instruction = open("geval/fluency/fluency_CoT_ko.txt",encoding="utf-8").read()
-    relevance_instruction = open("geval/relevance/relevance_CoT_ko.txt",encoding="utf-8").read()
+    coherence_instruction = open("geval/coherence/coherence_CoT_ko.txt", encoding="utf-8").read()
+    consistency_instruction = open("geval/consistency/consistency_CoT_ko.txt", encoding="utf-8").read()
+    fluency_instruction = open("geval/fluency/fluency_CoT_ko.txt", encoding="utf-8").read()
+    relevance_instruction = open("geval/relevance/relevance_CoT_ko.txt", encoding="utf-8").read()
 
-    coherence_assistant_example=open("geval/coherence/coherence_result_example_ko.txt",encoding="utf-8").read()
-    consistency_assistant_example=open("geval/consistency/consistency_result_example_ko.txt",encoding="utf-8").read()
-    fluency_assistant_example=open("geval/fluency/fluency_result_example_ko.txt",encoding="utf-8").read()
-    relevance_assistant_example=open("geval/relevance/relevance_result_example_ko.txt",encoding="utf-8").read()
+    coherence_assistant_example = open("geval/coherence/coherence_result_example_ko.txt", encoding="utf-8").read()
+    consistency_assistant_example = open("geval/consistency/consistency_result_example_ko.txt", encoding="utf-8").read()
+    fluency_assistant_example = open("geval/fluency/fluency_result_example_ko.txt", encoding="utf-8").read()
+    relevance_assistant_example = open("geval/relevance/relevance_result_example_ko.txt", encoding="utf-8").read()
 
     ct, ignore = 0, 0
 
-    coherence_input = open("geval/coherence/coherence_user_input_ko.txt",encoding="utf-8").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
-    consistency_input =open("geval/consistency/consistency_user_input_ko.txt",encoding="utf-8").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
-    fluency_input =open("geval/fluency/fluency_user_input_ko.txt",encoding="utf-8").read().replace('{{Summary}}', result_prompt)
-    relevance_input = open("geval/relevance/relevance_user_input_ko.txt",encoding="utf-8").read().replace('{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    coherence_input = open("geval/coherence/coherence_user_input_ko.txt", encoding="utf-8").read().replace(
+        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    consistency_input = open("geval/consistency/consistency_user_input_ko.txt", encoding="utf-8").read().replace(
+        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    fluency_input = open("geval/fluency/fluency_user_input_ko.txt", encoding="utf-8").read().replace('{{Summary}}',
+                                                                                                     result_prompt)
+    relevance_input = open("geval/relevance/relevance_user_input_ko.txt", encoding="utf-8").read().replace(
+        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
 
-    coherence={"system":coherence_instruction,"user":coherence_input,"assistant":coherence_assistant_example}
-    consistency={"system":consistency_instruction,"user":consistency_input,"assistant":consistency_assistant_example}
-    fluency={"system":fluency_instruction,"user":fluency_input,"assistant":fluency_assistant_example}
-    relevance={"system":relevance_instruction,"user":relevance_input,"assistant":relevance_assistant_example}
+    coherence = {"system": coherence_instruction, "user": coherence_input, "assistant": coherence_assistant_example}
+    consistency = {"system": consistency_instruction, "user": consistency_input,
+                   "assistant": consistency_assistant_example}
+    fluency = {"system": fluency_instruction, "user": fluency_input, "assistant": fluency_assistant_example}
+    relevance = {"system": relevance_instruction, "user": relevance_input, "assistant": relevance_assistant_example}
 
-    coherence_full_prompt=open("geval/coherence/coherence_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
-    consistency_full_prompt=open("geval/consistency/consistency_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
-    fluency_full_prompt=open("geval/fluency/fluency_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
-    relevance_full_prompt=open("geval/relevance/relevance_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
-    concrete_full_prompt=open("geval/concrete/concrete_full_prompt_ko.txt",encoding="utf-8").read().replace('{{Document}}',origin_prompt).replace('{{Summary}}',result_prompt)
+    coherence_full_prompt = open("geval/coherence/coherence_full_prompt_ko.txt", encoding="utf-8").read().replace(
+        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    consistency_full_prompt = open("geval/consistency/consistency_full_prompt_ko.txt", encoding="utf-8").read().replace(
+        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    fluency_full_prompt = open("geval/fluency/fluency_full_prompt_ko.txt", encoding="utf-8").read().replace(
+        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    relevance_full_prompt = open("geval/relevance/relevance_full_prompt_ko.txt", encoding="utf-8").read().replace(
+        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    concrete_full_prompt = open("geval/concrete/concrete_full_prompt_ko.txt", encoding="utf-8").read().replace(
+        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
     data = {}
 
     try:
@@ -205,7 +216,7 @@ def geval(request):
             "consistency": consistency_answer,
             "fluency": fluency_answer,
             "relevance": relevance_answer,
-            "concrete":concrete_answer
+            "concrete": concrete_answer
         }
 
     except Exception as e:
@@ -224,7 +235,7 @@ def geval(request):
 
 def geval_getAnswer(prompt, full_prompt):
     print("받은 프롬프트:")
-    #print(prompt)
+    # print(prompt)
     print(full_prompt)
     # llm_response = client.chat.completions.create(
     #     model="gpt-3.5-turbo",
@@ -247,12 +258,33 @@ def geval_getAnswer(prompt, full_prompt):
 
     # )
 
-    llm_response= genai.GenerativeModel("gemini-pro").generate_content(full_prompt)
+    llm_response = genai.GenerativeModel("gemini-pro").generate_content(full_prompt)
     time.sleep(0.5)
     print("llm 응답:")
     print(llm_response)
     # response = [llm_response.choices[i].text for i in range(len(llm_response.choices))]
-    #response = [llm_response.choices[i].message.content for i in range(len(llm_response.choices))]
-    response=llm_response.text
+    # response = [llm_response.choices[i].message.content for i in range(len(llm_response.choices))]
+    response = llm_response.text
 
     return response
+
+
+@csrf_exempt
+def analysis(request):
+    print("=================================================start analysis==============================")
+    origin_prompt = request.POST['origin']
+    result_prompt = request.POST['result']
+
+    security_prompt = open("prompt_templet/analysis.txt",
+                           encoding="utf-8").read().replace("[INPUT_PROMPT]", result_prompt)
+
+    data = {'answer': {"security": gemini(security_prompt)}}
+
+    print(data)
+
+    serializer = RestApiSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+
+    print("=================================================end analysis==============================")
+    return JsonResponse(data, json_dumps_params={'ensure_ascii': False})
