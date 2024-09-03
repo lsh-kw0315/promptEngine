@@ -165,7 +165,7 @@ def gemini(bot_prompt):
 def geval(request):
     origin_prompt = request.POST['origin']
     result_prompt = request.POST['result']
-
+    
     coherence_instruction = open("geval/coherence/coherence_CoT_ko.txt", encoding="utf-8").read()
     consistency_instruction = open("geval/consistency/consistency_CoT_ko.txt", encoding="utf-8").read()
     fluency_instruction = open("geval/fluency/fluency_CoT_ko.txt", encoding="utf-8").read()
