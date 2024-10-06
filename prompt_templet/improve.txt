@@ -1,63 +1,57 @@
-다음 문장을 영어로 번역해줘
+**Topic:** Improving Prompts Using Reference Knowledge
 
-**주제:** 참고 지식을 활용한 프롬프트 개선
+**Preprocessing**
+1. First, analyze the user's suggested improvements.
+2. If the suggestion is deemed unrelated to prompt improvement, return "ERROR: Inappropriate question." (Important)
+   - Examples: "Who are you?", "What is 1+1?", "Hello"—improvements that can't be applied to existing prompts.
+3. Then, check how closely the existing prompt is related to the prompt title.
 
-**전처리**
-1. 먼저 사용자의 개선점을 분석합니다.
-2. 프롬프트 개선와 벗어난 개선점이라고 파악된 경우, "ERROR: 적절하지 않은 질문입니다" 라고 리턴하시오. (중요)
- - 예: "넌 누구야?", "1+1은 뭐야", "안녕" 등의 기존 프롬프트에 적용할 수 없는 개선점
-3. 그 후 기존 프롬프트가 프롬프트 제목과 얼마나 연관성이 있는지 체크합니다. 
+**Process:**
+1. The user provides the base prompt and variation options to the LLM.
+2. If any content in the **prompt title** is missing from the **base prompt**, the LLM must include it in the **LLM output**.
+   Example(예시의 내용이 결과 프롬프트에 반영되어서는 안됨, [SUBJECT]만 반영되어야함):
+   - Prompt title: "A chatbot that generates Korean sentences for English study."
+   - Base prompt:
+     ```
+     ## 2. Generate sentences on specific topics
+     **Command:** Generate Korean sentences on the topic provided by the user. Ensure the sentences use a variety of vocabulary and structures to make them rich and natural.
 
-
-**프로세스:**
-1. 사용자는 LLM에게 기본 프롬프트와 변형 옵션을 제공합니다.
-2. 만약 **프롬프트 제목**의 내용 중 **기본 프롬프트:**에 빠진 내용이 있다면 **LLM 출력**에 반드시 포함시켜 출력해야합니다. 
-예)
-프롬프트 제목 : "영어 공부를 위해 한국어 문장을 생성하는 챗봇"
-기본 프롬프트 : "`
-## 2. 특정 주제에 대한 문장 생성하기
-
-**명령:** 사용자가 입력한 주제에 대한 한국어 문장을 생성해 주세요. 문장은 다양한 어휘와 문장 구조를 사용하여 풍부하고 자연스럽게 만들어 주세요. 
-
-**세부 사항:**
-
-* **주제:** 사용자가 입력한 주제에 대한 다양한 문장 생성
-* **프로세스:**
-    1. 사용자에게 주제를 입력받습니다.
-    2. 입력받은 주제에 대한 다양한 문장을 생성합니다.
-    3. 생성된 문장은 다양한 어휘와 문장 구조를 사용하여 풍부하고 자연스럽게 만듭니다.
-    4. 생성된 문장을 사용자에게 출력합니다.
-* **예시:**
-
-    * 사용자 입력: "여행"
-    * 챗봇 출력: 
-        * "저는 여행을 통해 새로운 문화를 경험하는 것을 좋아합니다."
-        * "해외 여행은 늘 설레는 일이죠." 
-        * "다음 여행지는 어디로 정할까요?"
-
-**입력:**
-
-주제를 입력해주세요: 
-"
-위 경우에 기본 프롬프트에 영어 공부에 관한 내용은 포함되어 있지 않으므로 영어 공부라는 키워드를 반드시 포함하여 출력해야합니다.
-3. LLM은 제공된 개선점을 기반으로 개선된 프롬프트를 생성합니다. 이 때 LLM에 입력하였을 때 바로 사용할 수 있을정도의 수준이어야합니다.
-4. 문단 기호나 강조 표시 등의 마크다운 표시들은 지양합니다. 텍스트로 옮길 시 표현이 안되기 때문입니다.
-5. 리포트처럼 작성하지 말고 하나의 프롬프트로 완결지으시오.
-6. 자동이라는 입력이 들어오면 LLM이 참고자료를 바탕으로 개선하여 출력하시오.
+     **Details:**
+     * **Topic:** Generate various sentences on the user's input topic.
+     * **Process:**
+        1. Receive the topic from the user.
+        2. Generate various sentences based on the input topic.
+        3. Ensure that the generated sentences are rich and natural, using diverse vocabulary and sentence structures.
+        4. Output the generated sentences to the user.
+     * **Example:**
+        * User input: "Travel"
+        * Chatbot output:
+           * "I enjoy experiencing new cultures through travel."
+           * "Traveling abroad is always exciting."
+           * "Where should I decide on for my next trip?"
+     **Input:** Please enter a topic:
+     ```
+   In this case, since the base prompt does not mention English study, the output must include the keyword "English study."
+3. The LLM generates an improved prompt based on the provided feedback. The prompt must be ready for immediate use when input into the LLM.
+4. Avoid using Markdown elements like paragraph symbols or emphasis marks, as they may not display correctly in plain text.
+5. Do not write it like a report—ensure it's a complete prompt.
+6. If "automatic" is entered, the LLM should automatically reference the source materials to improve the output.
+7. 입력받은 프롬프트의 언어로 출력해야 합니다.
+8. 예시는 단지 예시일 뿐입니다. 무시하고 스스로 내용을 분석해서 보강해주세요.
 
 
-**사용자 입력:**
+**User Input:**
 
-**프롬프트 제목**
+**Prompt Title**
 "[SUBJECT]"
 
-**기본 프롬프트:** 
+**Base Prompt:**
 "[ORIGIN_PROMPT]"
 
-**개선점** 
+**Improvement Suggestions**
 "[IMPROVE_TEXT]"
 
-**LLM 출력**
+**LLM Output**
 
 
 

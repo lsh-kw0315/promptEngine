@@ -1,68 +1,18 @@
 from datetime import datetime
-from transformers import BartForConditionalGeneration, BartTokenizer
 from django.shortcuts import render
-from openai import OpenAI
-import torch
 from django.http import JsonResponse
 from .models import Answer
 from rest_framework import viewsets
 from .serializer import RestApiSerializer
-import google.generativeai as genai
 import time
 from django.views.decorators.csrf import csrf_exempt
+import LLM.LLM as llm
 
 
 # json serializer 세팅
 class RestApiViewSet(viewsets.ModelViewSet):
     queryset = Answer.objects.all()
     serializer_class = RestApiSerializer
-
-
-# bart 모델 세팅
-model = BartForConditionalGeneration.from_pretrained("restApiTest/model/chatgpt-prompt-generator", from_tf=True)
-tokenizer = BartTokenizer.from_pretrained("restApiTest/model/chatgpt-prompt-generator")
-device = "cuda" if torch.cuda.is_available() else "cpu"
-model.to(device)
-
-API_KEY = "AIzaSyCAQsDeXl1LWreDgeYPAbvlJNJhfr2n4Hc"
-genai.configure(api_key=API_KEY)
-
-# llama 세팅
-client = OpenAI(
-    base_url="http://localhost:8000/v1",
-    api_key="None")
-
-
-def llama2(request):
-    query = request.POST['query']
-    data = {}
-    answer = chat2(query)
-    data['query'] = query
-    data['answer'] = answer
-
-    serializer = RestApiSerializer(data=data)
-    if serializer.is_valid():
-        serializer.save()
-    return JsonResponse(data)
-
-
-def chat2(query):
-    bot_prompt = (f'The task for you is to rephrase user queries into hyperparameter task prompts that make it easier '
-                  f'for other text generation AI to understand the requirements. For example, if I ask: \n\n"I\'m '
-                  f'planning a trip to Japan next month. Can you provide some recommendations for must-see attractions '
-                  f'and activities in Tokyo?",\n\n you should rephrase it as: \n\n"Provide recommendations on top '
-                  f'attractions, activities, and experiences in Tokyo suitable for a one-month trip. Include '
-                  f'information on convenient public transportation options, tips for efficient navigation, '
-                  f'and any other helpful advice for first-time visitors. [Task: Travel Recommendations] [Destination: '
-                  f'Tokyo, Japan] [Duration: 1 month] [Requirements: Top Attractions, Activities, Transportation, '
-                  f'Travel Tips]"\n\nYour role is not(never) to *answer* the questions I ask but to rephrase them into '
-                  f'*clear prompts with hyperparameters*(must) that make it easier for the text generation AI to '
-                  f'understand and provide relevant responses. Now, here\'s my real question. \n Q: "{query}"')
-
-    answer = llama(bot_prompt)
-
-    print(answer)
-    return answer
 
 
 def prompt_page(request):
@@ -78,91 +28,73 @@ def prompt_page(request):
     return render(request, 'prompt_page.html', context)
 
 
-def gemini_prompt_halfauto_generator(request, query):  # gemini가 promptgen + hyper-parameter + 자동 생성 모두 함.
-    input = query
-    print(input)
+def halfauto_generator(request, query):
+    print("=================================================start halfauto_generator==============================")
 
-    # 임시로 promptgen 기능 또한 gemini가 수행하도록 지시, hyper-parameter형 프롬프트 기능 또한 추가함.
-    bot_prompt = (
+    # 사용자가 입력한 값
+    print(query)
+
+    # hyper-parameter형 프롬프트로 기능.
+    prompt = (
         "question:\"[input]\" 이 단어들 또는 문장을 분석해서 \"hyper-parameter: [임무:여행 계획 추천], [장소:하와이], [기간:2025년 5월 중순 3박4일], "
         "[추천 목록: 동선, 관광지, 음식 추천, 현지 특이사항, 챙겨야 할 물건], [프롬프트 작성 언어: 한국어]\"와 같이 간결하게 정리 한 뒤,"
         "(중요! 앞에 기술한 hyper-parameter는 이해를 돕기 위해 예시로 적은 것이니 무조건 question에 적힌 것들로만 추론 해서 새로운 hyper-parameter를 작성 할 것.)"
         "이 hyper-parameter에 의거해 의뢰인이 하고자 하는 명령과 명령에 관한 세부적인 사항과 hyper-parameter를 "
         "출력하는 것을 3번 독립적으로 반복하시오. 명령은 \"하시오\"로 마무리하시오. 세부사항을 작성할 때는 주제, 프로세스, 예시 순으로 출력하시오."
         "각 반복에 대한 구분자는 **donedonedone** 입니다."
-        "출력할 때는 한국어로 번역하여 출력하시오.").replace("[input]", input)
-    print(bot_prompt)
+        "출력할 때는 한국어로 번역하여 출력하시오.").replace("[input]", query)
+    print(prompt)
 
-    # answer = llama(bot_prompt)
-    answer = gemini(bot_prompt)
-    data = {'query': input, 'answer': answer}
+    answer = llm.chat(prompt)
+    data = {'query': query, 'answer': answer}
 
     serializer = RestApiSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
+
+    print("=================================================end halfauto_generator==============================")
     return JsonResponse(data)
 
 
-def gemini_prompt_auto_generator(request, query):  # 기존 영어 persona 입력 후 promptgen으로 자동생성, gemini에게 인계
-    persona, output = persona_generator(query).values()
+# bart로 1차 생성 자동생성 후 LLM에게 인계
+def auto_generator(request, query):
+    print("=================================================start auto_generator==============================")
+
+    print(query)
+
+    # bart로 유저 input을 구체화시킨 후 LLM의 입력으로 줌
+    persona = llm.chat(query, "Bart")[0]
     print(persona)
-    print(output)
-    bot_prompt = ("당신은 [persona] 일을 보조하는 역할을 맡게 되었습니다. "
-                  "\n\nInput과 같이 [persona] 일을 하는 LLM에게 명령들과 해당 명령에 관한 세부적인 사항을 출력하는 것을 3번 독립적으로 반복하시오. "
-                  "\n(주의: 각 반복은 서로 연관된 주제나 순서가 아닌 독립적으로 명확히 구별되는 다른 명령입니다!)"
-                  "\n(주의: 명령에 대해 LLM이 해당 역할을 하는 봇이 될 수 있도록 프롬프트를 구성하시오.)"
-                  "\n\n세부사항을 작성할 때는 주제, 프로세스, 예시 순으로 출력하시오. "
-                  "\n\n사용자에게 입력 받을 텍스트가 있다면 입력받을 수 있게 양식을 만드시오. "
-                  "\n각 반복은 반드시 \"**donedonedone**\" 로 끝나야합니다."
-                  "출력할 때는 한국어로 번역하여 출력하시오. \n\nInput: [PromptGenResult]").replace("[persona]", persona).replace(
-        "[PromptGenResult]", output)
 
-    print(bot_prompt)
+    prompt = ("당신은 [persona] 일을 보조하는 역할을 맡게 되었습니다. "
+              "\n\nInput과 같이 [persona] 일을 하는 LLM에게 명령들과 해당 명령에 관한 세부적인 사항을 출력하는 것을 3번 독립적으로 반복하시오. "
+              "\n(주의: 각 반복은 서로 연관된 주제나 순서가 아닌 독립적으로 명확히 구별되는 다른 명령입니다!)"
+              "\n(주의: 명령에 대해 LLM이 해당 역할을 하는 봇이 될 수 있도록 프롬프트를 구성하시오.)"
+              "\n\n세부사항을 작성할 때는 주제, 프로세스, 예시 순으로 출력하시오. "
+              "\n\n사용자에게 입력 받을 텍스트가 있다면 입력받을 수 있게 양식을 만드시오. "
+              "\n각 반복은 반드시 \"**donedonedone**\" 로 끝나야합니다."
+              "출력할 때는 한국어로 번역하여 출력하시오. \n\nInput: [PromptGenResult]").replace("[persona]", query).replace(
+        "[PromptGenResult]", persona)
 
-    # answer = llama(bot_prompt)
-    answer = gemini(bot_prompt)
-    data = {'query': persona, 'answer': answer, 'intermedia': output}
+    print(prompt)
+
+    answer = llm.chat(prompt)
+    data = {'query': query, 'answer': answer, 'intermedia': persona}
 
     serializer = RestApiSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
+
+    print("=================================================end auto_generator==============================")
     return JsonResponse(data)
 
 
-# bart 실행 코드
-def persona_generator(query):
-    batch = tokenizer(query, return_tensors="pt")
-    batch.to(device)
-    generated_ids = model.generate(batch["input_ids"], max_new_tokens=150)
-    output = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)
-
-    data = {'persona': query, 'output': output[0]}
-
-    return data
-
-
-# llama 실행 코드
-def llama(prompt):
-    output = client.completions.create(
-        model="Meta-Llama-3-8B-Instruct-Q4_K_M.gguf",
-        prompt=prompt,
-        max_tokens=1024,
-    )
-
-    answer = str(output.choices[0].text.split("\n")[-1])
-    return answer
-
-
-def gemini(bot_prompt):
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')
-
-    response = model.generate_content(bot_prompt)
-
-    return response.text
-
-
+# 프롬프트 평가
+# form 사용 시 csrf 필수
 @csrf_exempt
 def geval(request):
+    print("=================================================start geval==============================")
+
     origin_prompt = request.POST['origin']
     result_prompt = request.POST['result']
 
@@ -230,6 +162,8 @@ def geval(request):
     serializer = RestApiSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
+
+    print("=================================================end geval==============================")
     return JsonResponse(data, json_dumps_params={'ensure_ascii': False})
 
 
@@ -258,7 +192,7 @@ def geval_getAnswer(prompt, full_prompt):
 
     # )
 
-    llm_response = genai.GenerativeModel("gemini-pro").generate_content(full_prompt)
+    llm_response = llm.chat(full_prompt, model="gemini-pro")
     time.sleep(0.5)
     print("llm 응답:")
     print(llm_response)
@@ -271,14 +205,38 @@ def geval_getAnswer(prompt, full_prompt):
 
 @csrf_exempt
 def analysis(request):
-    print("=================================================start analysis==============================")
+    print("=================================================start analysis=============================")
     origin_prompt = request.POST['origin']
     result_prompt = request.POST['result']
 
-    security_prompt = open("prompt_templet/analysis.txt",
+    analysis_prompt = open("prompt_templet/analysis.txt",
                            encoding="utf-8").read().replace("[INPUT_PROMPT]", result_prompt)
 
-    data = {'answer': {"security": gemini(security_prompt)}}
+    data = {'answer': {"security": llm.chat(analysis_prompt)}}
+    print(data)
+
+    serializer = RestApiSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+    print("=================================================end analysis=============================")
+    return JsonResponse(data, json_dumps_params={'ensure_ascii': False})
+
+@csrf_exempt
+def improve(request):
+    print("=================================================start improve=============================")
+    origin_prompt = request.POST['origin']
+    improve_text = request.POST['request']
+    subject = request.POST['subject']
+
+    improve_prompt = (open("prompt_templet/improve.txt",
+                          encoding="utf-8").read()
+                      .replace("[ORIGIN_PROMPT]", origin_prompt)
+                      .replace("[IMPROVE_TEXT]", improve_text)
+                      .replace("[SUBJECT]", subject))
+
+    print(improve_prompt)
+
+    data = {'answer': {"improve": llm.chat(improve_prompt)}}
 
     print(data)
 
@@ -286,5 +244,5 @@ def analysis(request):
     if serializer.is_valid():
         serializer.save()
 
-    print("=================================================end analysis==============================")
+    print("=================================================end improve=============================")
     return JsonResponse(data, json_dumps_params={'ensure_ascii': False})
