@@ -198,7 +198,7 @@ def geval_getAnswer(prompt, full_prompt):
     print(llm_response)
     # response = [llm_response.choices[i].text for i in range(len(llm_response.choices))]
     # response = [llm_response.choices[i].message.content for i in range(len(llm_response.choices))]
-    response = llm_response.text
+    response = llm_response
 
     return response
 
