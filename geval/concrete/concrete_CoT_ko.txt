@@ -1,0 +1,48 @@
+프롬프트 엔지니어링 기법을 원본 프롬프트에 적용한 결과인 결과 프롬프트가 주어집니다.
+
+여러분의 임무는 하나의 지표로 결과 프롬프트를 평가하는 것입니다.
+
+이 지침을 주의 깊게 읽고 이해하시기 바랍니다. 검토하는 동안 이 문서를 열어 두었다가 필요할 때 참조하시기 바랍니다.
+
+평가 기준:
+
+구체성(1~5점) - 원본 프롬프트보다 더 구체적인 사실을 담고 있습니다. 원본보다 더 구체적인 사실을 다루더라도 원본 프롬프트가 다루는 주제에서 벗어난 것을 다루거나 hallucination이 존재한다면 감점합니다.
+
+평가 과정:
+
+평가 과정에서 결과 프롬프트를 구체성 기준으로 평가하는 방법을 설명합니다. 이 지침을 따르면서 평가를 수행합니다.
+
+### 평가 과정
+
+1. 원본 프롬프트를 주의 깊게 읽고 이해하여 원본 프롬프트가 다루는 주제를 명확히 파악합니다.
+
+2.  결과 프롬프트를 주의 깊게 읽고 결과 프롬프트에서 원본 프롬프트와 동일한 주제를 다루고 있는지, 결과 프롬프트에서 제공하는 정보가 원본 프롬프트보다 구체적인지 확인합니다.
+
+3. 결과 프롬프트가 원본 프롬프트보다 더 구체적인 정보를 제공하는지 평가하고, 결과 프롬프트가 원본 프롬프트가 다루는 주제에서 벗어나거나 허위 정보를 포함하고 있는지 확인합니다.
+
+4. 결과 프롬프트가 원본 프롬프트보다 더 구체적인 정보를 포함하는지, 주제에서 벗어나지 않는지, 허위 정보를 포함하지 않는지를 기준으로 1~5점 척도로 구체성을 평가합니다. 
+
+구체성: 1
+원본 프롬프트: Explain the concept of TCP port scanning and its purposes.
+결과 프롬프트: Tell me about TCP port scanning.
+- 결과 프롬프트가 원본보다 더 구체적이지 않으며, 정보를 축소했습니다. 핵심 주제도 명확히 설명하지 않습니다.
+
+구체성: 2
+원본 프롬프트: Explain the concept of TCP port scanning and its purposes.
+결과 프롬프트: Explain TCP port scanning and why it is used.
+-결과 프롬프트는 원본과 거의 동일하며 약간의 구체성을 더했으나, 여전히 충분히 상세하지 않습니다. 추가 정보가 필요합니다.
+
+구체성: 3
+원본 프롬프트: Explain the concept of TCP port scanning and its purposes.
+결과 프롬프트: Explain the concept of TCP port scanning, its purposes, and some common techniques used.
+- 결과 프롬프트는 원본보다 약간 더 구체적입니다. 주제에서 벗어나지 않으며, TCP 포트 스캐닝의 개념, 목적, 일반적인 기법을 다룹니다.
+
+구체성: 4
+원본 프롬프트: Explain the concept of TCP port scanning and its purposes.
+결과 프롬프트: Explain the concept of TCP port scanning, including its definition, purposes, common techniques like SYN scan and FIN scan, and its implications for network security.
+- 결과 프롬프트는 원본보다 더 구체적이며, TCP 포트 스캐닝의 정의, 목적, 일반적인 기법, 네트워크 보안에 미치는 영향을 포함합니다. 주제에서 벗어나지 않습니다.
+
+구체성: 5
+원본 프롬프트: Explain the concept of TCP port scanning and its purposes.
+결과 프롬프트: Provide a comprehensive explanation of TCP port scanning, including its definition, the purposes for which it is used, detailed descriptions of techniques such as SYN scan, FIN scan, and Xmas scan, its importance in network security, and the legal and ethical considerations involved in its use.
+-  결과 프롬프트는 원본보다 훨씬 더 구체적이며, TCP 포트 스캐닝의 정의, 목적, 상세한 기법 설명, 네트워크 보안의 중요성, 법적 및 윤리적 고려사항을 모두 포함합니다. 주제에서 벗어나지 않으며, 허위 정보가 없습니다.

@@ -7,7 +7,9 @@ from .serializer import RestApiSerializer
 import time
 from django.views.decorators.csrf import csrf_exempt
 import LLM.LLM as llm
-
+import asyncio
+from asgiref.sync import ThreadSensitiveContext, async_to_sync
+import time
 
 # json serializer 세팅
 class RestApiViewSet(viewsets.ModelViewSet):
@@ -76,7 +78,7 @@ def auto_generator(request, query):
               "출력할 때는 한국어로 번역하여 출력하시오. \n\nInput: [PromptGenResult]").replace("[persona]", query).replace(
         "[PromptGenResult]", persona)
 
-    print(prompt)
+    #print(prompt)
 
     answer = llm.chat(prompt)
     data = {'query': query, 'answer': answer, 'intermedia': persona}
@@ -102,13 +104,7 @@ def geval(request):
     consistency_instruction = open("geval/consistency/consistency_CoT_ko.txt", encoding="utf-8").read()
     fluency_instruction = open("geval/fluency/fluency_CoT_ko.txt", encoding="utf-8").read()
     relevance_instruction = open("geval/relevance/relevance_CoT_ko.txt", encoding="utf-8").read()
-
-    coherence_assistant_example = open("geval/coherence/coherence_result_example_ko.txt", encoding="utf-8").read()
-    consistency_assistant_example = open("geval/consistency/consistency_result_example_ko.txt", encoding="utf-8").read()
-    fluency_assistant_example = open("geval/fluency/fluency_result_example_ko.txt", encoding="utf-8").read()
-    relevance_assistant_example = open("geval/relevance/relevance_result_example_ko.txt", encoding="utf-8").read()
-
-    ct, ignore = 0, 0
+    concrete_instruction = open("geval/concrete/concrete_CoT_ko.txt", encoding="utf-8").read()
 
     coherence_input = open("geval/coherence/coherence_user_input_ko.txt", encoding="utf-8").read().replace(
         '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
@@ -118,46 +114,78 @@ def geval(request):
                                                                                                      result_prompt)
     relevance_input = open("geval/relevance/relevance_user_input_ko.txt", encoding="utf-8").read().replace(
         '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    concrete_input = open("geval/concrete/concrete_user_input_ko.txt", encoding="utf-8").read().replace(
+        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
 
-    coherence = {"system": coherence_instruction, "user": coherence_input, "assistant": coherence_assistant_example}
-    consistency = {"system": consistency_instruction, "user": consistency_input,
-                   "assistant": consistency_assistant_example}
-    fluency = {"system": fluency_instruction, "user": fluency_input, "assistant": fluency_assistant_example}
-    relevance = {"system": relevance_instruction, "user": relevance_input, "assistant": relevance_assistant_example}
+    # coherence = {"system": coherence_instruction, "user": coherence_input, "assistant": coherence_assistant_example}
+    # consistency = {"system": consistency_instruction, "user": consistency_input,
+    #                "assistant": consistency_assistant_example}
+    # fluency = {"system": fluency_instruction, "user": fluency_input, "assistant": fluency_assistant_example}
+    # relevance = {"system": relevance_instruction, "user": relevance_input, "assistant": relevance_assistant_example}
 
-    coherence_full_prompt = open("geval/coherence/coherence_full_prompt_ko.txt", encoding="utf-8").read().replace(
-        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
-    consistency_full_prompt = open("geval/consistency/consistency_full_prompt_ko.txt", encoding="utf-8").read().replace(
-        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
-    fluency_full_prompt = open("geval/fluency/fluency_full_prompt_ko.txt", encoding="utf-8").read().replace(
-        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
-    relevance_full_prompt = open("geval/relevance/relevance_full_prompt_ko.txt", encoding="utf-8").read().replace(
-        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
-    concrete_full_prompt = open("geval/concrete/concrete_full_prompt_ko.txt", encoding="utf-8").read().replace(
-        '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
-    data = {}
+    # coherence_full_prompt = open("geval/coherence/coherence_full_prompt_ko.txt", encoding="utf-8").read().replace(
+    #     '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    # consistency_full_prompt = open("geval/consistency/consistency_full_prompt_ko.txt", encoding="utf-8").read().replace(
+    #     '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    # fluency_full_prompt = open("geval/fluency/fluency_full_prompt_ko.txt", encoding="utf-8").read().replace(
+    #     '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    # relevance_full_prompt = open("geval/relevance/relevance_full_prompt_ko.txt", encoding="utf-8").read().replace(
+    #     '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    # concrete_full_prompt = open("geval/concrete/concrete_full_prompt_ko.txt", encoding="utf-8").read().replace(
+    #     '{{Document}}', origin_prompt).replace('{{Summary}}', result_prompt)
+    
+    # prompt_list = [
+    #     coherence_full_prompt,
+    #     consistency_full_prompt,
+    #     fluency_full_prompt,
+    #     relevance_full_prompt,
+    #     concrete_full_prompt
+    # ]
+    
+    
+    prompt_list = [
+        {"content":coherence_input,"system_instruction": coherence_instruction},
+        {"content":consistency_input,"system_instruction": consistency_instruction},
+        {"content":fluency_input,"system_instruction": fluency_instruction},
+        {"content":relevance_input,"system_instruction": relevance_instruction},
+        {"content":concrete_input,"system_instruction": concrete_instruction}
+    ]
+    async def geval_getAnswerAsync(prompt):
+        return await asyncio.to_thread(geval_getAnswerSystemInst, prompt)
 
-    try:
-        coherence_answer = geval_getAnswer(coherence, coherence_full_prompt)
-        consistency_answer = geval_getAnswer(consistency, consistency_full_prompt)
-        fluency_answer = geval_getAnswer(fluency, fluency_full_prompt)
-        relevance_answer = geval_getAnswer(relevance, relevance_full_prompt)
-        concrete_answer = geval_getAnswer(None, concrete_full_prompt)
-        data['answer'] = {
-            "coherence": coherence_answer,
-            "consistency": consistency_answer,
-            "fluency": fluency_answer,
-            "relevance": relevance_answer,
-            "concrete": concrete_answer
+    async def geval_answerAsync(prompt_list):  
+        answer_list = await asyncio.gather(
+                geval_getAnswerAsync(prompt_list[0]),
+                geval_getAnswerAsync(prompt_list[1]),
+                geval_getAnswerAsync(prompt_list[2]),
+                geval_getAnswerAsync(prompt_list[3]),
+                geval_getAnswerAsync(prompt_list[4])
+        )
+
+        return {
+            "coherence": answer_list[0],
+            "consistency": answer_list[1],
+            "fluency": answer_list[2],
+            "relevance": answer_list[3],
+            "concrete": answer_list[4]
         }
 
-    except Exception as e:
-        print(e)
-        if ("limit" in str(e)):
-            time.sleep(2)
-        else:
-            ignore += 1
-            print('ignored', ignore)
+    
+    
+    startTime = time.time()
+    data = {"answer":async_to_sync(geval_answerAsync)(prompt_list)}
+    # data = {"answer":
+    #         {
+    #             "coherence": geval_getAnswer(prompt_list[0]),
+    #             "consistency": geval_getAnswer(prompt_list[1]),
+    #             "fluency": geval_getAnswer(prompt_list[2]),
+    #             "relevance":geval_getAnswer(prompt_list[3]),
+    #             "concrete": geval_getAnswer(prompt_list[4])
+    #         }
+    # }
+    endTime = time.time()
+    print("걸린 시간:", endTime - startTime)
+    
 
     serializer = RestApiSerializer(data=data)
     if serializer.is_valid():
@@ -167,41 +195,36 @@ def geval(request):
     return JsonResponse(data, json_dumps_params={'ensure_ascii': False})
 
 
-def geval_getAnswer(prompt, full_prompt):
-    print("받은 프롬프트:")
-    # print(prompt)
-    print(full_prompt)
-    # llm_response = client.chat.completions.create(
-    #     model="gpt-3.5-turbo",
-    #     messages=[
-    #         {"role":"system","content":full_prompt}
-    #         #{"role": "system", "content": prompt['system']},
-    #         #{"role": "user", "content": prompt['user']},
-    #         #{"role":"assistant","content":prompt['assistant']},
-    #     ],
-    #     # prompt=full_prompt,
-    #     temperature=1,
-    #     max_tokens=200,
-    #     top_p=1,
-    #     frequency_penalty=2.0,
-    #     presence_penalty=0,
-    #     # stop='assistant',
-    #     # logprobs=40,
-    #     # n=5,
-    #     # echo=False
+def geval_getAnswer(full_prompt):
+    ignore = 0
+    try:
+        llm_response = llm.chat(full_prompt)
+        response = llm_response
 
-    # )
+        return response
 
-    llm_response = llm.chat(full_prompt, model="gemini-pro")
-    time.sleep(0.5)
-    print("llm 응답:")
-    print(llm_response)
-    # response = [llm_response.choices[i].text for i in range(len(llm_response.choices))]
-    # response = [llm_response.choices[i].message.content for i in range(len(llm_response.choices))]
-    response = llm_response
+    except Exception as e:
+        print(e)
+        if ("limit" in str(e)):
+            time.sleep(2)
+        else:
+            ignore += 1
+            print('ignored', ignore)
 
-    return response
+def geval_getAnswerSystemInst(promptObj):
+    ignore = 0
+    try:
+        llm_response = llm.chat(prompt=promptObj["content"], system_inst=promptObj["system_instruction"])
+        response = llm_response
+        return response
 
+    except Exception as e:
+        print(e)
+        if ("limit" in str(e)):
+            time.sleep(2)
+        else:
+            ignore += 1
+            print('ignored', ignore)
 
 @csrf_exempt
 def analysis(request):
